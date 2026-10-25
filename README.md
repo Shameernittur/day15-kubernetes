@@ -25,3 +25,34 @@ A local Kubernetes cluster named `winter-arc` was provisioned using `kind` (Kube
 kind create cluster --name winter-arc
 kubectl cluster-info
 kubectl get nodes
+
+
+Deploy and Scale Nginx
+1. Deployment (deployment.yaml)
+Defined a 2-replica Nginx workload running official image nginx:1.27 exposing container port 80:
+
+Bash
+kubectl apply -f deployment.yaml
+2. Service (service.yaml)
+Defined a NodePort Service mapping external node port 30080 to target container port 80 using the app: nginx label selector:
+
+Bash
+kubectl apply -f service.yaml
+3. Scaling Replicas
+Scaled the workload declaratively from 2 to 3 replicas:
+
+Bash
+kubectl scale deployment nginx-deployment --replicas=3
+kubectl get deployment nginx-deployment
+kubectl get pods -o wide
+
+
+Cluster Ready: Verification of the control-plane node status via kubectl get nodes[cite: 9, 12].
+
+Workload Deployment: Output of kubectl get deployments, kubectl get pods -o wide, and kubectl get services showing running pods and the assigned NodePort[cite: 10, 12].
+
+Horizontal Scaling: Verified 3/3 ready replicas upon running kubectl scale.
+
+Access Verification: Successful HTTP 200 response returning the default "Welcome to nginx!" HTML via kubectl port-forward service/nginx-service 8080:80 and curl http://localhost:8080.
+
+Self-Healing Loop: Demonstration of Pod deletion and immediate replica reconciliation.
